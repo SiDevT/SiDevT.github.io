@@ -5,17 +5,22 @@
 </head>
 <body>
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const playStore = 'https://play.google.com/store/apps/details?id=com.si_gpscamera7.demo_test';
+    var params  = new URLSearchParams(window.location.search);
+    var code    = params.get('code');
+    var store   = 'https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery';
 
     if (code) {
+        // Try open app → myapp://pair?code=ABC123
         window.location.href = 'myapp://pair?code=' + code;
+
+        // App not installed → Play Store after 2 sec
         setTimeout(function() {
-            window.location.href = playStore;
+            window.location.href = store;
         }, 2000);
+
     } else {
-        window.location.href = playStore;
+        // No code → Play Store
+        window.location.href = store;
     }
 </script>
 </body>
