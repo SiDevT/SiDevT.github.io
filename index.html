@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const playStore = 'https://play.google.com/store/apps/details?id=com.si_gpscamera7.demo_test';
+
+    if (code) {
+        window.location.href = 'myapp://pair?code=' + code;
+        setTimeout(function() {
+            window.location.href = playStore;
+        }, 2000);
+    } else {
+        window.location.href = playStore;
+    }
+</script>
+</body>
+</html>
