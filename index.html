@@ -10,16 +10,13 @@
     var store   = 'https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery';
 
     if (code) {
-        // Try open app → myapp://pair?code=ABC123
         window.location.href = 'myapp://pair?code=' + code;
 
-        // App not installed → Play Store after 2 sec
         setTimeout(function() {
             window.location.href = store;
         }, 2000);
 
     } else {
-        // No code → Play Store
         window.location.href = store;
     }
 </script>
