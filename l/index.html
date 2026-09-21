@@ -75,10 +75,12 @@
 <div class="box">
     <b>Package:</b>
     <span id="packageName"></span>
+
     <br><br>
 
     <b>Deep Link:</b>
     <span id="deepLink"></span>
+
     <br><br>
 
     <b>Play Store:</b>
@@ -154,6 +156,11 @@
         + "end";
 
 
+    // --------------------------------------------------
+    // DISPLAY INFORMATION ONLY
+    // No redirect happens here.
+    // --------------------------------------------------
+
     document.getElementById("packageName").innerText =
         packageName;
 
@@ -163,6 +170,10 @@
     document.getElementById("playStore").innerText =
         playStoreMarket;
 
+
+    // --------------------------------------------------
+    // LOG FUNCTION
+    // --------------------------------------------------
 
     function log(message) {
 
@@ -177,66 +188,81 @@
     }
 
 
+    // --------------------------------------------------
+    // GALLERY BUTTON
+    // Redirect ONLY when this button is pressed.
+    // --------------------------------------------------
+
     window.openGallery = function () {
 
         log("Trying Gallery deep link...");
-
         log("URL: " + deepLink);
 
         window.location.href = deepLink;
-
     };
 
+
+    // --------------------------------------------------
+    // MARKET BUTTON
+    // Redirect ONLY when this button is pressed.
+    // --------------------------------------------------
 
     window.openMarket = function () {
 
-        log("Trying market://");
-
+        log("Trying market://...");
         log("URL: " + playStoreMarket);
 
-        window.location.href =
-            playStoreMarket;
-
+        window.location.href = playStoreMarket;
     };
 
+
+    // --------------------------------------------------
+    // INTENT BUTTON
+    // Redirect ONLY when this button is pressed.
+    // --------------------------------------------------
 
     window.openIntent = function () {
 
         log("Trying intent:// without explicit package...");
-
         log("URL: " + playStoreIntentNoPackage);
 
-        window.location.href =
-            playStoreIntentNoPackage;
-
+        window.location.href = playStoreIntentNoPackage;
     };
 
+
+    // --------------------------------------------------
+    // INTENT + PACKAGE BUTTON
+    // Redirect ONLY when this button is pressed.
+    // --------------------------------------------------
 
     window.openIntentPackage = function () {
 
         log("Trying intent:// with Play Store package...");
-
         log("Package: com.android.vending");
-
         log("URL: " + playStoreIntent);
 
-        window.location.href =
-            playStoreIntent;
-
+        window.location.href = playStoreIntent;
     };
 
+
+    // --------------------------------------------------
+    // PLAY STORE HTTPS BUTTON
+    // Redirect ONLY when this button is pressed.
+    // --------------------------------------------------
 
     window.openPlayStoreWeb = function () {
 
         log("Opening Play Store HTTPS URL...");
-
         log("URL: " + playStoreWeb);
 
-        window.location.href =
-            playStoreWeb;
-
+        window.location.href = playStoreWeb;
     };
 
+
+    // --------------------------------------------------
+    // DEVICE INFORMATION BUTTON
+    // NO REDIRECT
+    // --------------------------------------------------
 
     window.showEnvironment = function () {
 
@@ -280,13 +306,15 @@
         );
 
         log("========================================");
-
     };
 
 
-    /*
-     * Automatically print basic information.
-     */
+    // --------------------------------------------------
+    // PAGE LOAD
+    // ONLY LOGGING.
+    // NO REDIRECT.
+    // --------------------------------------------------
+
     log("Page loaded.");
 
     if (v) {
@@ -301,11 +329,10 @@
         log(
             "WARNING: v parameter is missing."
         );
-
     }
 
     log(
-        "No automatic redirect is performed."
+        "Automatic redirect: DISABLED"
     );
 
 })();
