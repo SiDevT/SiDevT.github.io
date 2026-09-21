@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,11 +15,15 @@
     var p = new URLSearchParams(window.location.search);
     var v = p.get("v");
 
-    var fallback =
-        "https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery";
+    var packageName =
+        "com.aiphotovideogallery.privatephotogallery";
+
+    var playStoreIntent =
+        "intent://details?id=" + packageName +
+        "#Intent;scheme=market;package=com.android.vending;end";
 
     if (!v) {
-        window.location.replace(fallback);
+        window.location.href = playStoreIntent;
         return;
     }
 
@@ -26,6 +31,7 @@
     var fallbackTimer = null;
 
     function markAppOpened() {
+
         appOpened = true;
 
         if (fallbackTimer) {
@@ -35,23 +41,29 @@
     }
 
     document.addEventListener("visibilitychange", function () {
+
         if (document.visibilityState === "hidden") {
             markAppOpened();
         }
+
     });
 
     window.addEventListener("pagehide", function () {
         markAppOpened();
     });
 
-    var deepLink = "sg7k://l?v=" + encodeURIComponent(v);
+
+    var deepLink =
+        "sg7k://l?v=" + encodeURIComponent(v);
 
     window.location.href = deepLink;
 
     fallbackTimer = setTimeout(function () {
 
         if (!appOpened) {
-            window.location.replace(fallback);
+
+            window.location.href = playStoreIntent;
+
         }
 
     }, 2500);
