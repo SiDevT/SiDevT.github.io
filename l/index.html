@@ -2,66 +2,41 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opening Gallery...</title>
 </head>
-
 <body>
 
 <script>
 
 (function () {
 
-    var params = new URLSearchParams(window.location.search);
-    var v = params.get("v");
+    var p = new URLSearchParams(window.location.search);
+    var v = p.get("v");
 
-    var packageName =
+    var fallback =
+        "https://play.google.com/store/apps/details?id=" +
         "com.aiphotovideogallery.privatephotogallery";
 
-    // Play Store Android Intent
-    var playStoreIntent =
-        "intent://details?id=" + packageName +
-        "#Intent;" +
-        "scheme=market;" +
-        "package=com.android.vending;" +
-        "end";
+    if (v) {
 
-    // If no v parameter, directly open Play Store app
-    if (!v) {
-        window.location.href = playStoreIntent;
-        return;
+        // Try to open Gallery app
+        var galleryUrl =
+            "sg7k://l?v=" + encodeURIComponent(v);
+
+        window.location.href = galleryUrl;
+
+        // If Gallery did not open, go to Play Store HTTPS
+        setTimeout(function () {
+
+            window.location.href = fallback;
+
+        }, 2000);
+
+    } else {
+
+        // No v parameter -> directly open Play Store HTTPS
+        window.location.href = fallback;
+
     }
-
-    // Gallery deep link
-    var galleryUrl =
-        "sg7k://l?v=" + encodeURIComponent(v);
-
-    // Assume app is not opened initially
-    var appOpened = false;
-
-    // If page becomes hidden, Android likely opened the Gallery app
-    document.addEventListener("visibilitychange", function () {
-
-        if (document.hidden) {
-            appOpened = true;
-        }
-
-    });
-
-    // Try opening Gallery
-    window.location.href = galleryUrl;
-
-    // If Chrome is still visible after timeout,
-    // try opening Play Store APP.
-    setTimeout(function () {
-
-        if (!appOpened && !document.hidden) {
-
-            window.location.href = playStoreIntent;
-
-        }
-
-    }, 2000);
 
 })();
 
