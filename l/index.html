@@ -2,21 +2,73 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opening Gallery...</title>
 </head>
-<body>
-<script>
-    var p = new URLSearchParams(window.location.search);
-    var v = p.get('v');
-    var fallback = 'https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery';
 
-    if (v) {
-        window.location.href = 'sg7k://l?v=' + v;
-        setTimeout(function () {
-            window.location.href = fallback;
-        }, 2000);
-    } else {
-        window.location.href = fallback;
+<body>
+
+<script>
+(function () {
+
+    var p = new URLSearchParams(window.location.search);
+    var v = p.get("v");
+
+    var fallback =
+        "https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery";
+
+    // No deep-link value -> directly open Play Store
+    if (!v) {
+        window.location.replace(fallback);
+        return;
     }
+
+    var appOpened = false;
+    var fallbackTimer = null;
+
+    function markAppOpened() {
+        appOpened = true;
+
+        if (fallbackTimer) {
+            clearTimeout(fallbackTimer);
+            fallbackTimer = null;
+        }
+    }
+
+    // If browser becomes hidden/backgrounded, the app probably opened.
+    document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "hidden") {
+            markAppOpened();
+        }
+    });
+
+    window.addEventListener("pagehide", function () {
+        markAppOpened();
+    });
+
+    /*
+     * First try the custom deep link.
+     */
+    var deepLink = "sg7k://l?v=" + encodeURIComponent(v);
+
+    window.location.href = deepLink;
+
+    /*
+     * If the app did not open, send the user to Play Store.
+     *
+     * Do not use an extremely short timeout because some devices
+     * need a little time to resolve the custom scheme.
+     */
+    fallbackTimer = setTimeout(function () {
+
+        if (!appOpened) {
+            window.location.replace(fallback);
+        }
+
+    }, 2500);
+
+})();
 </script>
+
 </body>
 </html>
