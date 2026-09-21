@@ -3,55 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opening Gallery...</title>
+
+    <title>Gallery Deep Link Debug</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .box {
+            background: #f3f3f3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            word-break: break-word;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin: 6px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .secondary {
+            background: #34a853;
+            color: white;
+        }
+
+        .warning {
+            background: #fbbc04;
+            color: black;
+        }
+
+        .danger {
+            background: #ea4335;
+            color: white;
+        }
+
+        #log {
+            background: #111;
+            color: #00ff66;
+            padding: 12px;
+            border-radius: 8px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 13px;
+        }
+    </style>
 </head>
 
 <body>
 
+<h2>Gallery Deep Link Debug</h2>
+
+<div class="box">
+    <b>Package:</b>
+    <span id="packageName"></span>
+    <br><br>
+
+    <b>Deep Link:</b>
+    <span id="deepLink"></span>
+    <br><br>
+
+    <b>Play Store:</b>
+    <span id="playStore"></span>
+</div>
+
+<h3>1. Gallery App</h3>
+
+<button class="primary" onclick="openGallery()">
+    Open Gallery using sg7k://
+</button>
+
+<h3>2. Play Store Tests</h3>
+
+<button class="secondary" onclick="openMarket()">
+    Open Play Store using market://
+</button>
+
+<button class="secondary" onclick="openIntent()">
+    Open Play Store using intent://
+</button>
+
+<button class="secondary" onclick="openIntentPackage()">
+    Open Play Store using intent:// + package
+</button>
+
+<button class="warning" onclick="openPlayStoreWeb()">
+    Open Play Store HTTPS
+</button>
+
+<h3>3. Debug Information</h3>
+
+<button class="danger" onclick="showEnvironment()">
+    Show Device / Browser Information
+</button>
+
+<h3>Log</h3>
+
+<div id="log">Waiting...</div>
+
 <script>
+
 (function () {
 
     var params = new URLSearchParams(window.location.search);
+
     var v = params.get("v");
 
     var packageName =
         "com.aiphotovideogallery.privatephotogallery";
 
-    var playStoreApp =
+    var deepLink =
+        "sg7k://l?v=" + encodeURIComponent(v || "");
+
+    var playStoreMarket =
         "market://details?id=" + packageName;
 
     var playStoreWeb =
-        "https://play.google.com/store/apps/details?id=" + packageName;
+        "https://play.google.com/store/apps/details?id="
+        + packageName;
 
-    if (!v) {
+    var playStoreIntent =
+        "intent://details?id=" + packageName
+        + "#Intent;"
+        + "scheme=market;"
+        + "package=com.android.vending;"
+        + "end";
 
-        window.location.href = playStoreApp;
-        
-        setTimeout(function () {
-            window.location.href = playStoreWeb;
-        }, 1500);
+    var playStoreIntentNoPackage =
+        "intent://details?id=" + packageName
+        + "#Intent;"
+        + "scheme=market;"
+        + "end";
 
-        return;
+
+    document.getElementById("packageName").innerText =
+        packageName;
+
+    document.getElementById("deepLink").innerText =
+        deepLink;
+
+    document.getElementById("playStore").innerText =
+        playStoreMarket;
+
+
+    function log(message) {
+
+        var logElement =
+            document.getElementById("log");
+
+        var time =
+            new Date().toLocaleTimeString();
+
+        logElement.innerText +=
+            "\n[" + time + "] " + message;
     }
 
-    var deepLink =
-        "sg7k://l?v=" + encodeURIComponent(v);
 
-    window.location.href = deepLink;
+    window.openGallery = function () {
 
-    setTimeout(function () {
+        log("Trying Gallery deep link...");
 
-        window.location.href = playStoreApp;
+        log("URL: " + deepLink);
 
-        setTimeout(function () {
+        window.location.href = deepLink;
 
-            window.location.href = playStoreWeb;
+    };
 
-        }, 1500);
 
-    }, 2500);
+    window.openMarket = function () {
+
+        log("Trying market://");
+
+        log("URL: " + playStoreMarket);
+
+        window.location.href =
+            playStoreMarket;
+
+    };
+
+
+    window.openIntent = function () {
+
+        log("Trying intent:// without explicit package...");
+
+        log("URL: " + playStoreIntentNoPackage);
+
+        window.location.href =
+            playStoreIntentNoPackage;
+
+    };
+
+
+    window.openIntentPackage = function () {
+
+        log("Trying intent:// with Play Store package...");
+
+        log("Package: com.android.vending");
+
+        log("URL: " + playStoreIntent);
+
+        window.location.href =
+            playStoreIntent;
+
+    };
+
+
+    window.openPlayStoreWeb = function () {
+
+        log("Opening Play Store HTTPS URL...");
+
+        log("URL: " + playStoreWeb);
+
+        window.location.href =
+            playStoreWeb;
+
+    };
+
+
+    window.showEnvironment = function () {
+
+        log("========== DEVICE INFORMATION ==========");
+
+        log(
+            "User Agent:\n" +
+            navigator.userAgent
+        );
+
+        log(
+            "Platform: " +
+            navigator.platform
+        );
+
+        log(
+            "Language: " +
+            navigator.language
+        );
+
+        log(
+            "Online: " +
+            navigator.onLine
+        );
+
+        log(
+            "Screen: " +
+            window.screen.width +
+            " x " +
+            window.screen.height
+        );
+
+        log(
+            "URL:\n" +
+            window.location.href
+        );
+
+        log(
+            "v parameter: " +
+            (v || "NOT FOUND")
+        );
+
+        log("========================================");
+
+    };
+
+
+    /*
+     * Automatically print basic information.
+     */
+    log("Page loaded.");
+
+    if (v) {
+
+        log(
+            "v parameter found: " +
+            v
+        );
+
+    } else {
+
+        log(
+            "WARNING: v parameter is missing."
+        );
+
+    }
+
+    log(
+        "No automatic redirect is performed."
+    );
 
 })();
+
 </script>
 
 </body>
