@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,59 +11,43 @@
 <script>
 (function () {
 
-    var p = new URLSearchParams(window.location.search);
-    var v = p.get("v");
+    var params = new URLSearchParams(window.location.search);
+    var v = params.get("v");
 
     var packageName =
         "com.aiphotovideogallery.privatephotogallery";
 
-    var playStoreIntent =
-        "intent://details?id=" + packageName +
-        "#Intent;scheme=market;package=com.android.vending;end";
+    var playStoreApp =
+        "market://details?id=" + packageName;
+
+    var playStoreWeb =
+        "https://play.google.com/store/apps/details?id=" + packageName;
 
     if (!v) {
-        window.location.href = playStoreIntent;
+
+        window.location.href = playStoreApp;
+        
+        setTimeout(function () {
+            window.location.href = playStoreWeb;
+        }, 1500);
+
         return;
     }
-
-    var appOpened = false;
-    var fallbackTimer = null;
-
-    function markAppOpened() {
-
-        appOpened = true;
-
-        if (fallbackTimer) {
-            clearTimeout(fallbackTimer);
-            fallbackTimer = null;
-        }
-    }
-
-    document.addEventListener("visibilitychange", function () {
-
-        if (document.visibilityState === "hidden") {
-            markAppOpened();
-        }
-
-    });
-
-    window.addEventListener("pagehide", function () {
-        markAppOpened();
-    });
-
 
     var deepLink =
         "sg7k://l?v=" + encodeURIComponent(v);
 
     window.location.href = deepLink;
 
-    fallbackTimer = setTimeout(function () {
+    setTimeout(function () {
 
-        if (!appOpened) {
+        window.location.href = playStoreApp;
 
-            window.location.href = playStoreIntent;
+        setTimeout(function () {
 
-        }
+            window.location.href = playStoreWeb;
+
+        }, 1500);
 
     }, 2500);
 
