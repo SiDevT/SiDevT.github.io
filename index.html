@@ -3,134 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Opening Gallery...</title>
+    <title>Redirecting...</title>
 </head>
-
 <body>
-
 <script>
+    var p = new URLSearchParams(window.location.search);
+    var v = p.get('v');
+    var packageName = 'com.aiphotovideogallery.privatephotogallery';
 
-(function () {
+    // Detect if the user is on an Android device
+    var isAndroid = /android/i.test(navigator.userAgent);
 
-    // --------------------------------------------------
-    // CONFIGURATION
-    // --------------------------------------------------
+    // If Android, use 'market://', otherwise fallback to web URL (for PC/iOS)
+    var fallback = isAndroid 
+        ? 'market://details?id=' + packageName 
+        : 'https://play.google.com/store/apps/details?id=' + packageName;
 
-    var packageName =
-        "com.aiphotovideogallery.privatephotogallery";
+    if (v) {
+        // Try opening the custom app scheme
+        window.location.href = 'sg7k://l?v=' + v;
 
-    var fallback =
-        "https://play.google.com/store/apps/details?id=" +
-        packageName;
+        // Fallback to Play Store if app is not installed
+        var timeout = setTimeout(function () {
+            window.location.href = fallback;
+        }, 2000);
 
-
-    // --------------------------------------------------
-    // GET v PARAMETER
-    // Example:
-    // https://sidevt.github.io/l?v=ABC123
-    // --------------------------------------------------
-
-    var params =
-        new URLSearchParams(window.location.search);
-
-    var v =
-        params.get("v");
-
-
-    // --------------------------------------------------
-    // TRACK WHETHER BROWSER BECAME HIDDEN
-    //
-    // If Gallery app opens successfully, Chrome/browser
-    // normally becomes hidden.
-    // --------------------------------------------------
-
-    var appOpened = false;
-
-    var fallbackTimer = null;
-
-
-    document.addEventListener(
-        "visibilitychange",
-        function () {
-
+        // Clear timeout if the app opened successfully (prevents redirect when user returns)
+        window.addEventListener('visibilitychange', function () {
             if (document.hidden) {
-
-                appOpened = true;
-
-                // Gallery was successfully launched.
-                // Cancel Play Store fallback.
-                if (fallbackTimer !== null) {
-
-                    clearTimeout(fallbackTimer);
-                    fallbackTimer = null;
-                }
+                clearTimeout(timeout);
             }
-
-        }
-    );
-
-
-    // --------------------------------------------------
-    // IF v IS MISSING
-    //
-    // There is no Gallery deep-link data.
-    // Directly open Play Store HTTPS.
-    // --------------------------------------------------
-
-    if (!v) {
-
-        window.location.replace(fallback);
-
-        return;
+        });
+        window.addEventListener('pagehide', function () {
+            clearTimeout(timeout);
+        });
+    } else {
+        window.location.href = fallback;
     }
-
-
-    // --------------------------------------------------
-    // CREATE GALLERY DEEP LINK
-    // --------------------------------------------------
-
-    var galleryUrl =
-        "sg7k://l?v=" +
-        encodeURIComponent(v);
-
-
-    // --------------------------------------------------
-    // TRY TO OPEN GALLERY APP
-    // --------------------------------------------------
-
-    window.location.href =
-        galleryUrl;
-
-
-    // --------------------------------------------------
-    // FALLBACK TIMER
-    //
-    // If Gallery did not open and browser is still
-    // visible after 2 seconds, open Play Store HTTPS.
-    // --------------------------------------------------
-
-    fallbackTimer = setTimeout(
-        function () {
-
-            if (
-                !appOpened &&
-                !document.hidden
-            ) {
-
-                window.location.replace(
-                    fallback
-                );
-            }
-
-        },
-        2000
-    );
-
-
-})();
-
 </script>
-
 </body>
 </html>
