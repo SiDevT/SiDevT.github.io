@@ -4,42 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #f9f9f9;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #01875f;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
+
+    <p>Opening application...</p>
+    <!-- Fallback button in case browser completely blocks auto-redirection -->
+    <a id="actionBtn" class="btn" href="#">Continue to App / Store</a>
+
 <script>
     var p = new URLSearchParams(window.location.search);
-    var v = p.get('v');
-    var packageName = 'com.aiphotovideogallery.privatephotogallery';
+    var v = p.get('v') || '';
+    var pkg = 'com.aiphotovideogallery.privatephotogallery';
 
-    // Detect if the user is on an Android device
-    var isAndroid = /android/i.test(navigator.userAgent);
+    var isAndroid = /Android/i.test(navigator.userAgent);
+    var targetUrl = '';
 
-    // If Android, use 'market://', otherwise fallback to web URL (for PC/iOS)
-    var fallback = isAndroid 
-        ? 'market://details?id=' + packageName 
-        : 'https://play.google.com/store/apps/details?id=' + packageName;
-
-    if (v) {
-        // Try opening the custom app scheme
-        window.location.href = 'sg7k://l?v=' + v;
-
-        // Fallback to Play Store if app is not installed
-        var timeout = setTimeout(function () {
-            window.location.href = fallback;
-        }, 2000);
-
-        // Clear timeout if the app opened successfully (prevents redirect when user returns)
-        window.addEventListener('visibilitychange', function () {
-            if (document.hidden) {
-                clearTimeout(timeout);
-            }
-        });
-        window.addEventListener('pagehide', function () {
-            clearTimeout(timeout);
-        });
+    if (isAndroid) {
+        if (v) {
+            // Android Intent: Tries opening 'sg7k://l?v=...', if not installed opens Play Store App directly
+            targetUrl = 'intent://l?v=' + encodeURIComponent(v) + '#Intent;scheme=sg7k;package=' + pkg + ';end;';
+        } else {
+            // Directly launch the Play Store app
+            targetUrl = 'intent://details?id=' + pkg + '#Intent;scheme=market;package=com.android.vending;end;';
+        }
     } else {
-        window.location.href = fallback;
+        // Desktop / iOS fallback to web Play Store
+        targetUrl = 'https://play.google.com/store/apps/details?id=' + pkg;
     }
+
+    // Set button link for manual click (if auto-redirect is blocked by in-app browsers)
+    document.getElementById('actionBtn').href = targetUrl;
+
+    // Trigger auto-redirect immediately
+    window.location.replace(targetUrl);
 </script>
 </body>
 </html>
