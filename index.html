@@ -2,41 +2,131 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Opening Gallery...</title>
 </head>
+
 <body>
 
 <script>
 
 (function () {
 
-    var p = new URLSearchParams(window.location.search);
-    var v = p.get("v");
+    // --------------------------------------------------
+    // CONFIGURATION
+    // --------------------------------------------------
+
+    var packageName =
+        "com.aiphotovideogallery.privatephotogallery";
 
     var fallback =
-                "https://play.google.com/store/apps/details?id="
-        + packageName;
+        "https://play.google.com/store/apps/details?id=" +
+        packageName;
 
-    if (v) {
 
-        // Try to open Gallery app
-        var galleryUrl =
-            "sg7k://l?v=" + encodeURIComponent(v);
+    // --------------------------------------------------
+    // GET v PARAMETER
+    // Example:
+    // https://sidevt.github.io/l?v=ABC123
+    // --------------------------------------------------
 
-        window.location.href = galleryUrl;
+    var params =
+        new URLSearchParams(window.location.search);
 
-        // If Gallery did not open, go to Play Store HTTPS
-        setTimeout(function () {
+    var v =
+        params.get("v");
 
-            window.location.href = fallback;
 
-        }, 2000);
+    // --------------------------------------------------
+    // TRACK WHETHER BROWSER BECAME HIDDEN
+    //
+    // If Gallery app opens successfully, Chrome/browser
+    // normally becomes hidden.
+    // --------------------------------------------------
 
-    } else {
+    var appOpened = false;
 
-        // No v parameter -> directly open Play Store HTTPS
-        window.location.href = fallback;
+    var fallbackTimer = null;
 
+
+    document.addEventListener(
+        "visibilitychange",
+        function () {
+
+            if (document.hidden) {
+
+                appOpened = true;
+
+                // Gallery was successfully launched.
+                // Cancel Play Store fallback.
+                if (fallbackTimer !== null) {
+
+                    clearTimeout(fallbackTimer);
+                    fallbackTimer = null;
+                }
+            }
+
+        }
+    );
+
+
+    // --------------------------------------------------
+    // IF v IS MISSING
+    //
+    // There is no Gallery deep-link data.
+    // Directly open Play Store HTTPS.
+    // --------------------------------------------------
+
+    if (!v) {
+
+        window.location.replace(fallback);
+
+        return;
     }
+
+
+    // --------------------------------------------------
+    // CREATE GALLERY DEEP LINK
+    // --------------------------------------------------
+
+    var galleryUrl =
+        "sg7k://l?v=" +
+        encodeURIComponent(v);
+
+
+    // --------------------------------------------------
+    // TRY TO OPEN GALLERY APP
+    // --------------------------------------------------
+
+    window.location.href =
+        galleryUrl;
+
+
+    // --------------------------------------------------
+    // FALLBACK TIMER
+    //
+    // If Gallery did not open and browser is still
+    // visible after 2 seconds, open Play Store HTTPS.
+    // --------------------------------------------------
+
+    fallbackTimer = setTimeout(
+        function () {
+
+            if (
+                !appOpened &&
+                !document.hidden
+            ) {
+
+                window.location.replace(
+                    fallback
+                );
+            }
+
+        },
+        2000
+    );
+
 
 })();
 
