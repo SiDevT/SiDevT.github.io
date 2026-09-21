@@ -13,11 +13,8 @@
     var v = p.get("v");
 
     var fallback =
-        "intent://details?id=" + packageName
-        + "#Intent;"
-        + "scheme=market;"
-        + "package=com.android.vending;"
-        + "end";
+                "market://details?id=" + packageName;
+
 
     if (v) {
 
