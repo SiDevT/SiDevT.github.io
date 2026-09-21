@@ -3,29 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opening Gallery...</title>
+    <title>Gallery Deep Link Debug</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .box {
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        button {
+            padding: 12px 18px;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+    </style>
 </head>
+
 <body>
 
+<h2>Gallery Deep Link Debug</h2>
+
+<div id="status" class="box">
+    Checking link...
+</div>
+
+<div id="details" class="box"></div>
+
+<button id="openApp" style="display:none;">
+    Open Gallery App
+</button>
+
 <script>
+    const status = document.getElementById("status");
+    const details = document.getElementById("details");
+    const openAppButton = document.getElementById("openApp");
+
+    const currentUrl = window.location.href;
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
 
-    const playStore =
-        "https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery";
+    details.innerHTML =
+        "<b>Current URL:</b><br>" +
+        currentUrl +
+        "<br><br>" +
+        "<b>v parameter:</b><br>" +
+        (v ? v : "NOT FOUND");
 
     if (!v) {
-        window.location.replace(playStore);
-    } else {
-        const intentUrl =
-            "intent://l?v=" + encodeURIComponent(v) +
-            "#Intent;" +
-            "scheme=sg7k;" +
-            "package=com.si_igallary.tejas_gallary;" +
-            "S.browser_fallback_url=" + encodeURIComponent(playStore) +
-            ";end";
 
-        window.location.replace(intentUrl);
+        status.innerHTML =
+            "<b class='error'>ERROR: v parameter not found.</b><br><br>" +
+            "Expected URL format:<br>" +
+            "https://sidevt.github.io/l?v=YOUR_VALUE";
+
+    } else {
+
+        const deepLink =
+            "sg7k://l?v=" + encodeURIComponent(v);
+
+        status.innerHTML =
+            "<b class='success'>v parameter found.</b><br><br>" +
+            "The app deep link is:<br>" +
+            "<b>" + deepLink + "</b>";
+
+        details.innerHTML +=
+            "<br><br>" +
+            "<b>Deep Link:</b><br>" +
+            deepLink;
+
+        openAppButton.style.display = "block";
+
+        openAppButton.onclick = function () {
+
+            status.innerHTML =
+                "<b>Trying to open Gallery app...</b><br><br>" +
+                "If nothing happens, Android did not resolve the " +
+                "sg7k:// deep link to your application.";
+
+            window.location.href = deepLink;
+        };
     }
 </script>
 
