@@ -2,21 +2,32 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opening Gallery...</title>
 </head>
 <body>
-<script>
-    var p = new URLSearchParams(window.location.search);
-    var v = p.get('v');
-    var fallback = 'https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery';
 
-    if (v) {
-        window.location.href = 'sg7k://l?v=' + v;
-        setTimeout(function () {
-            window.location.href = fallback;
-        }, 2000);
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("v");
+
+    const playStore =
+        "https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery";
+
+    if (!v) {
+        window.location.replace(playStore);
     } else {
-        window.location.href = fallback;
+        const intentUrl =
+            "intent://l?v=" + encodeURIComponent(v) +
+            "#Intent;" +
+            "scheme=sg7k;" +
+            "package=com.aiphotovideogallery.privatephotogallery;" +
+            "S.browser_fallback_url=" + encodeURIComponent(playStore) +
+            ";end";
+
+        window.location.replace(intentUrl);
     }
 </script>
+
 </body>
 </html>
