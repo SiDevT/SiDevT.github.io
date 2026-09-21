@@ -17,7 +17,6 @@
     var fallback =
         "https://play.google.com/store/apps/details?id=com.aiphotovideogallery.privatephotogallery";
 
-    // No deep-link value -> directly open Play Store
     if (!v) {
         window.location.replace(fallback);
         return;
@@ -35,7 +34,6 @@
         }
     }
 
-    // If browser becomes hidden/backgrounded, the app probably opened.
     document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "hidden") {
             markAppOpened();
@@ -46,19 +44,10 @@
         markAppOpened();
     });
 
-    /*
-     * First try the custom deep link.
-     */
     var deepLink = "sg7k://l?v=" + encodeURIComponent(v);
 
     window.location.href = deepLink;
 
-    /*
-     * If the app did not open, send the user to Play Store.
-     *
-     * Do not use an extremely short timeout because some devices
-     * need a little time to resolve the custom scheme.
-     */
     fallbackTimer = setTimeout(function () {
 
         if (!appOpened) {
